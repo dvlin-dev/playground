@@ -7,10 +7,13 @@ const texts = {
 }
 
 const voices = [
-  "zh_female_shuangkuaisisi_moon_bigtts", // ！
-  "ICL_zh_female_huoponvhai_tob",
-  "ICL_zh_female_wumeiyujie_tob",
-  "ICL_zh_female_xingganyujie_tob"
+//   "zh_female_shuangkuaisisi_moon_bigtts", // ！
+//   "ICL_zh_female_huoponvhai_tob",
+//   "ICL_zh_female_wumeiyujie_tob",
+//   "ICL_zh_female_xingganyujie_tob",
+  "wenjingxuejie",
+  "qinqienvsheng",
+  "shuangkuaijiejie"
 ]
 
 async function generateAudio(voice, text, lang) {
@@ -24,7 +27,7 @@ async function generateAudio(voice, text, lang) {
       'Authorization': `Bearer ${apiKey}`
     },
     body: JSON.stringify({
-      "model": "Doubao-tts",
+      "model": "step-tts-mini",
       "input": text,
       "response_format": "mp3",
       "voice": voice
