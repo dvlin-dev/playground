@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
  
 const STEP_API_KEY =
-  "efZATqa6Asp4YJKPgWxTz0hoeirj6VHvv6KYT9t35FlDDJBn5ToTWxogF7wfAYhp";
+  "xxx";
 const STEP_API_MODEL = "step-tts-mini";
  
 const openai = new OpenAI({
