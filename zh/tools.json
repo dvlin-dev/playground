@@ -1,0 +1,527 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "message_notify_user",
+      "description": "向用户发送消息，无需回复。用于确认收到消息、提供进度更新、报告任务完成或解释方法变更。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "显示给用户的消息文本"
+          },
+          "attachments": {
+            "anyOf": [
+              {"type": "string"},
+              {"items": {"type": "string"}, "type": "array"}
+            ],
+            "description": "（可选）向用户显示的附件列表，可以是文件路径或URL"
+          }
+        },
+        "required": ["text"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "message_ask_user",
+      "description": "向用户提问并等待回复。用于请求澄清、请求确认或收集额外信息。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "向用户提出的问题文本"
+          },
+          "attachments": {
+            "anyOf": [
+              {"type": "string"},
+              {"items": {"type": "string"}, "type": "array"}
+            ],
+            "description": "（可选）问题相关文件或参考材料列表"
+          },
+          "suggest_user_takeover": {
+            "type": "string",
+            "enum": ["none", "browser"],
+            "description": "（可选）建议用户接管的操作"
+          }
+        },
+        "required": ["text"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_read",
+      "description": "读取文件内容。用于检查文件内容、分析日志或读取配置文件。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "要读取的文件的绝对路径"
+          },
+          "start_line": {
+            "type": "integer",
+            "description": "（可选）开始读取的行，从0开始"
+          },
+          "end_line": {
+            "type": "integer",
+            "description": "（可选）结束行号（不包括）"
+          },
+          "sudo": {
+            "type": "boolean",
+            "description": "（可选）是否使用sudo权限"
+          }
+        },
+        "required": ["file"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_write",
+      "description": "覆盖或追加内容到文件。用于创建新文件、追加内容或修改现有文件。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "要写入的文件的绝对路径"
+          },
+          "content": {
+            "type": "string",
+            "description": "要写入的文本内容"
+          },
+          "append": {
+            "type": "boolean",
+            "description": "（可选）是否使用追加模式"
+          },
+          "leading_newline": {
+            "type": "boolean",
+            "description": "（可选）是否添加前导换行符"
+          },
+          "trailing_newline": {
+            "type": "boolean",
+            "description": "（可选）是否添加尾随换行符"
+          },
+          "sudo": {
+            "type": "boolean",
+            "description": "（可选）是否使用sudo权限"
+          }
+        },
+        "required": ["file", "content"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_str_replace",
+      "description": "替换文件中指定的字符串。用于更新文件中的特定内容或修复代码中的错误。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "要执行替换的文件的绝对路径"
+          },
+          "old_str": {
+            "type": "string",
+            "description": "要替换的原始字符串"
+          },
+          "new_str": {
+            "type": "string",
+            "description": "用于替换的新字符串"
+          },
+          "sudo": {
+            "type": "boolean",
+            "description": "（可选）是否使用sudo权限"
+          }
+        },
+        "required": ["file", "old_str", "new_str"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_find_in_content",
+      "description": "在文件内容中搜索匹配文本。用于查找文件中的特定内容或模式。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "要在其中搜索的文件的绝对路径"
+          },
+          "regex": {
+            "type": "string",
+            "description": "要匹配的正则表达式模式"
+          },
+          "sudo": {
+            "type": "boolean",
+            "description": "（可选）是否使用sudo权限"
+          }
+        },
+        "required": ["file", "regex"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_find_by_name",
+      "description": "在指定目录中按名称模式查找文件。用于定位具有特定命名模式的文件。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "要搜索的目录的绝对路径"
+          },
+          "glob": {
+            "type": "string",
+            "description": "使用glob语法通配符的文件名模式"
+          }
+        },
+        "required": ["path", "glob"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "shell_exec",
+      "description": "在指定的shell会话中执行命令。用于运行代码、安装软件包或管理文件。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "command": {
+            "type": "string",
+            "description": "要执行的shell命令"
+          },
+          "session_id": {
+            "type": "string",
+            "description": "（可选）shell会话ID，用于在同一会话中执行多个命令"
+          },
+          "timeout": {
+            "type": "integer",
+            "description": "（可选）命令超时（秒）"
+          },
+          "sudo": {
+            "type": "boolean",
+            "description": "（可选）是否使用sudo权限"
+          }
+        },
+        "required": ["command"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "shell_kill",
+      "description": "终止正在运行的shell会话。用于停止长时间运行的进程或清理资源。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "description": "要终止的shell会话的ID"
+          }
+        },
+        "required": ["session_id"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_open",
+      "description": "打开浏览器并导航到URL。用于访问网站、Web应用程序或在线资源。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "要导航到的URL"
+          },
+          "session_id": {
+            "type": "string",
+            "description": "（可选）浏览器会话ID，用于在同一会话中执行多个操作"
+          },
+          "timeout": {
+            "type": "integer",
+            "description": "（可选）导航超时（秒）"
+          }
+        },
+        "required": ["url"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_click",
+      "description": "在浏览器中点击元素。用于与网页交互、提交表单或导航。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string",
+            "description": "要点击的元素的CSS选择器"
+          },
+          "session_id": {
+            "type": "string",
+            "description": "浏览器会话ID"
+          },
+          "timeout": {
+            "type": "integer",
+            "description": "（可选）点击操作超时（秒）"
+          }
+        },
+        "required": ["selector", "session_id"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_fill",
+      "description": "在浏览器中填写表单字段。用于输入数据、登录或搜索。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string",
+            "description": "要填写的表单字段的CSS选择器"
+          },
+          "text": {
+            "type": "string",
+            "description": "要输入的文本"
+          },
+          "session_id": {
+            "type": "string",
+            "description": "浏览器会话ID"
+          },
+          "timeout": {
+            "type": "integer",
+            "description": "（可选）填写操作超时（秒）"
+          }
+        },
+        "required": ["selector", "text", "session_id"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_extract",
+      "description": "从浏览器中提取元素内容。用于抓取数据、读取文本或获取信息。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string",
+            "description": "要提取的元素的CSS选择器"
+          },
+          "session_id": {
+            "type": "string",
+            "description": "浏览器会话ID"
+          },
+          "timeout": {
+            "type": "integer",
+            "description": "（可选）提取操作超时（秒）"
+          }
+        },
+        "required": ["selector", "session_id"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_screenshot",
+      "description": "捕获浏览器屏幕截图。用于记录网页状态、调试或文档。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "description": "浏览器会话ID"
+          },
+          "output_file": {
+            "type": "string",
+            "description": "（可选）保存截图的文件路径"
+          }
+        },
+        "required": ["session_id"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_js",
+      "description": "在浏览器中执行JavaScript。用于高级网页交互或数据提取。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "要执行的JavaScript代码"
+          },
+          "session_id": {
+            "type": "string",
+            "description": "浏览器会话ID"
+          }
+        },
+        "required": ["code", "session_id"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_wait",
+      "description": "等待浏览器中的元素或条件。用于处理动态加载的内容或异步操作。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string",
+            "description": "要等待的元素的CSS选择器"
+          },
+          "session_id": {
+            "type": "string",
+            "description": "浏览器会话ID"
+          },
+          "timeout": {
+            "type": "integer",
+            "description": "（可选）等待操作超时（秒）"
+          }
+        },
+        "required": ["selector", "session_id"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_close",
+      "description": "关闭浏览器会话。用于清理资源或结束Web交互。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "description": "要关闭的浏览器会话的ID"
+          }
+        },
+        "required": ["session_id"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "deploy_static",
+      "description": "部署静态网站。用于托管HTML、CSS和客户端JavaScript。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "directory": {
+            "type": "string",
+            "description": "包含静态网站文件的目录的绝对路径"
+          },
+          "port": {
+            "type": "integer",
+            "description": "（可选）用于本地服务的端口"
+          }
+        },
+        "required": ["directory"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "deploy_app",
+      "description": "部署Web应用程序。用于托管具有服务器端功能的应用程序。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "directory": {
+            "type": "string",
+            "description": "包含应用程序文件的目录的绝对路径"
+          },
+          "port": {
+            "type": "integer",
+            "description": "（可选）用于本地服务的端口"
+          },
+          "command": {
+            "type": "string",
+            "description": "启动应用程序的命令"
+          }
+        },
+        "required": ["directory", "command"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "deploy_status",
+      "description": "检查部署状态。用于监控部署进度或获取访问URL。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "deployment_id": {
+            "type": "string",
+            "description": "部署ID"
+          }
+        },
+        "required": ["deployment_id"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "deploy_stop",
+      "description": "停止部署。用于清理资源或终止不再需要的部署。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "deployment_id": {
+            "type": "string",
+            "description": "要停止的部署的ID"
+          }
+        },
+        "required": ["deployment_id"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "port_expose",
+      "description": "暴露本地端口以进行外部访问。用于共享本地服务或演示。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "port": {
+            "type": "integer",
+            "description": "要暴露的本地端口"
+          }
+        },
+        "required": ["port"]
+      }
+    }
+  }
+] 
