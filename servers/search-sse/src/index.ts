@@ -36,7 +36,11 @@ server.tool(
         query: params.query,
         type: 'keyword',
         numResults: 10,
-        maxTextChars: 3000,
+        contents: {
+          text: {
+            maxCharacters: 3000,
+          },
+        },
       };
       
       const searchResult = await search(searchParams);
@@ -51,31 +55,15 @@ server.tool(
           ],
         };
       }
-
-      // 格式化搜索结果
-      const formattedResults = searchResult.results.map((result, index) => {
-        let resultText = `${index + 1}. ${result.title}\n${result.url}`;
-        
-        if (result.author) {
-          resultText += `\n作者: ${result.author}`;
-        }
-        
-        if (result.publishedDate) {
-          resultText += `\n发布日期: ${result.publishedDate}`;
-        }
-        
-        if (result.text) {
-          resultText += `\n内容片段: ${result.text}`;
-        }
-        
-        return resultText;
-      }).join('\n\n');
+      console.info("Search result:", searchResult.results);
       
+      const stringifyResults = JSON.stringify(searchResult.results);
+
       return {
         content: [
           {
             type: "text",
-            text: `搜索结果 (${searchResult.results.length}个):\n\n${formattedResults}`,
+            text: stringifyResults,
           },
         ],
       };

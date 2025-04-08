@@ -4,6 +4,8 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import readline from "readline/promises";
 import dotenv from "dotenv";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
+import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { Command } from "commander";
 
 dotenv.config();
 
@@ -17,7 +19,7 @@ if (!API_KEY) {
 class MCPClient {
   private mcp: Client;
   private openai: OpenAI;
-  private transport: SSEClientTransport | null = null;
+  private transport: SSEClientTransport | StdioClientTransport | null = null;
   private tools: ChatCompletionTool[] = [];
 
   constructor() {
@@ -35,17 +37,33 @@ class MCPClient {
     });
   }
   
-  async connectToServer(sseUrl: string) {
-    console.log("Connecting to server at:", sseUrl);
+  async connectToServer(url: string, type: "sse" | "stdio" = "stdio") {
+    console.log("Connecting to server at:", url, type);
     try {
-      const url = new URL(sseUrl);
-      
-      this.transport = new SSEClientTransport(
-        url
-      );
-      
+      if (type === "sse") {
+        this.transport = new SSEClientTransport(
+          new URL(url)
+        );
+        console.info("SSE transport created");
+      } else {
+        const isJs = url.endsWith(".js");
+        const isPy = url.endsWith(".py");
+        if (!isJs && !isPy) {
+          throw new Error("Server script must be a .js or .py file");
+        }
+        const command = isPy
+          ? process.platform === "win32"
+            ? "python"
+            : "python3"
+          : process.execPath;
+        this.transport = new StdioClientTransport({
+          command,
+          args: [url],
+        });
+        console.info("Stdio transport created");
+      }
       await this.mcp.connect(this.transport);
-      
+      console.info("Connect to server");
       const toolsResult = await this.mcp.listTools();
       this.tools = toolsResult.tools.map((tool) => {
         return {
@@ -85,10 +103,10 @@ class MCPClient {
   
       const finalText = [];
       const toolResults = [];
-    
+
       if (response.choices[0]?.message?.tool_calls?.length) {
         const toolCalls = response.choices[0].message.tool_calls;
-        
+
         for (const toolCall of toolCalls) {
           const toolName = toolCall.function.name;
           const toolArgs = JSON.parse(toolCall.function.arguments);
@@ -97,7 +115,7 @@ class MCPClient {
             name: toolName,
             arguments: toolArgs,
           });
-          
+
           toolResults.push(result);
           finalText.push(
             `[Calling tool ${toolName} with args ${JSON.stringify(toolArgs)}]`
@@ -114,12 +132,12 @@ class MCPClient {
             content: result.content as string,
           });
     
+          
           const followUpResponse = await this.openai.chat.completions.create({
             model: API_MODEL || 'gpt-4o',
-            max_tokens: 1000,
             messages,
           });
-    
+
           finalText.push(followUpResponse.choices[0]?.message?.content || "");
         }
       } else if (response.choices[0]?.message?.content) {
@@ -162,13 +180,28 @@ class MCPClient {
 }
 
 async function main() {
-  if (process.argv.length < 3) {
-    console.log("Usage: node index.ts <sse_url>");
-    return;
-  }
+  const program = new Command();
+  
+  program
+    .name("mcp-client")
+    .description("MCP 客户端命令行工具")
+    .version("1.0.0")
+    .argument("<url>", "服务器 URL 或脚本路径")
+    .option("-t, --transport <type>", "传输类型 (sse 或 stdio)", "stdio")
+    .addHelpText("after", `
+示例:
+  SSE模式: node build/index.js --transport sse http://127.0.0.1:5101/sse
+  stdio模式: node build/index.js ../servers/weather/build/index.js
+    `)
+    .parse(process.argv);
+
+  const options = program.opts();
+  const serverUrl = program.args[0];
+  const transportType = options.transport as "sse" | "stdio";
+
   const mcpClient = new MCPClient();
   try {
-    await mcpClient.connectToServer(process.argv[2]);
+    await mcpClient.connectToServer(serverUrl, transportType);
     await mcpClient.chatLoop();
   } finally {
     await mcpClient.cleanup();

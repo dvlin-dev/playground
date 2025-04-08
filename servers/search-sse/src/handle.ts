@@ -83,15 +83,12 @@ export interface SearchParams {
   query: string;
   useAutoprompt?: boolean;
   type?: 'keyword' | 'neural' | 'auto';
-  category?: string;
   numResults?: number;
-  includeDomains?: string[];
-  excludeDomains?: string[];
-  text?: boolean;
-  highlight?: boolean;
-  summary?: boolean;
-  maxTextChars?: number;
-  maxLines?: number;
+  contents?: {
+    text?: {
+      maxCharacters?: number;
+    };
+  };
 }
 
 // 定义错误类型
