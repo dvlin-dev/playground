@@ -60,7 +60,7 @@ docker push dvlindev/search-service
 2. 运行容器
 
 ```bash
-docker run -p 5101:5101 -e EXA_API_KEY=your_api_key_here search-service
+docker run -p 5101:5101 -e EXA_API_KEY=your_api_key_here dvlindev/search-service 
 ```
 
 ### 使用Docker Compose
