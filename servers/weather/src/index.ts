@@ -1,8 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { AlertsResponse, ForecastPeriod, ForecastResponse, NWS_API_BASE, PointsResponse } from "./const.js";
-import { formatAlert, makeNWSRequest } from "./handle.js";
+import { getWeather } from "./handle.js";
 
 // Create server instance
 const server = new McpServer({
@@ -14,141 +13,90 @@ const server = new McpServer({
   },
 });
 
-
-// Register weather tools
-server.tool(
-  "get-alerts",
-  "Get weather alerts for a state",
-  {
-    state: z.string().length(2).describe("Two-letter state code (e.g. CA, NY)"),
-  },
-  async ({ state }) => {
-    const stateCode = state.toUpperCase();
-    const alertsUrl = `${NWS_API_BASE}/alerts?area=${stateCode}`;
-    const alertsData = await makeNWSRequest<AlertsResponse>(alertsUrl);
-    console.log('get-alerts', alertsData);
-
-    if (!alertsData) {
-      return {
-        content: [
-          {
-            type: "text",
-            text: "Failed to retrieve alerts data",
-          },
-        ],
-      };
-    }
-
-    const features = alertsData.features || [];
-    if (features.length === 0) {
-      return {
-        content: [
-          {
-            type: "text",
-            text: `No active alerts for ${stateCode}`,
-          },
-        ],
-      };
-    }
-
-    const formattedAlerts = features.map(formatAlert);
-    const alertsText = `Active alerts for ${stateCode}:\n\n${formattedAlerts.join("\n")}`;
-
-    return {
-      content: [
-        {
-          type: "text",
-          text: alertsText,
-        },
-      ],
-    };
-  },
-);
-
 server.tool(
   "get-forecast",
   "Get weather forecast for a location",
   {
-    latitude: z.number().min(-90).max(90).describe("Latitude of the location"),
-    longitude: z.number().min(-180).max(180).describe("Longitude of the location"),
+    adcode: z.string().describe("adcode of the location, adcode is a 6-digit number, from amap.com"),
+    extensions: z.enum(["base", "all"]).optional().describe("Weather type: 'base' for current weather, 'all' for forecast"),
   },
-  async ({ latitude, longitude }) => {
-    // Get grid point data
-    const pointsUrl = `${NWS_API_BASE}/points/${latitude.toFixed(4)},${longitude.toFixed(4)}`;
-    const pointsData = await makeNWSRequest<PointsResponse>(pointsUrl);
-    console.log('get-forecast', pointsData);
-    if (!pointsData) {
+  async ({ adcode, extensions = "all" }) => {
+    try {
+      const weather = await getWeather(adcode, extensions as 'base' | 'all');
+      
+      if (weather.status !== "1") {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `获取天气信息失败: ${weather.info}`,
+            },
+          ],
+        };
+      }
+
+      // 处理实况天气信息
+      if (extensions === "base" && weather.lives && weather.lives.length > 0) {
+        const live = weather.lives[0];
+        return {
+          content: [
+            {
+              type: "text",
+              text: `${live.province}${live.city}
+              实时天气:
+              气温: ${live.temperature}°C
+              天气: ${live.weather}
+              风向: ${live.winddirection}
+              风力: ${live.windpower}级
+              湿度: ${live.humidity}%
+              发布时间: ${live.reporttime}`,
+            },
+          ],
+        };
+      }
+      
+      // 处理天气预报信息
+      if (extensions === "all" && weather.forecast && weather.forecast.length > 0) {
+        const forecast = weather.forecast[0];
+        const formattedForecast = forecast.casts.map(cast => 
+          `${cast.date} (星期${cast.week}):
+          白天: ${cast.dayweather}, ${cast.daytemp}°C, ${cast.daywind}风${cast.daypower}级
+          夜间: ${cast.nightweather}, ${cast.nighttemp}°C, ${cast.nightwind}风${cast.nightpower}级`
+        ).join("\n");
+        
+        return {
+          content: [
+            {
+              type: "text",
+              text: `${forecast.province}${forecast.city}
+              天气预报:${formattedForecast}
+              发布时间: ${forecast.reporttime}`,
+            },
+          ],
+        };
+      }
+
       return {
         content: [
           {
             type: "text",
-            text: `Failed to retrieve grid point data for coordinates: ${latitude}, ${longitude}. This location may not be supported by the NWS API (only US locations are supported).`,
+            text: "未找到天气信息",
           },
         ],
       };
-    }
-
-    const forecastUrl = pointsData.properties?.forecast;
-    if (!forecastUrl) {
+    } catch (error) {
+      console.error("获取天气信息出错:", error);
       return {
         content: [
           {
             type: "text",
-            text: "Failed to get forecast URL from grid point data",
+            text: `获取天气信息时发生错误: ${error instanceof Error ? error.message : String(error)}`,
           },
         ],
       };
     }
-
-    // Get forecast data
-    const forecastData = await makeNWSRequest<ForecastResponse>(forecastUrl);
-    if (!forecastData) {
-      return {
-        content: [
-          {
-            type: "text",
-            text: "Failed to retrieve forecast data",
-          },
-        ],
-      };
-    }
-
-    const periods = forecastData.properties?.periods || [];
-    if (periods.length === 0) {
-      return {
-        content: [
-          {
-            type: "text",
-            text: "No forecast periods available",
-          },
-        ],
-      };
-    }
-
-    // Format forecast periods
-    const formattedForecast = periods.map((period: ForecastPeriod) =>
-      [
-        `${period.name || "Unknown"}:`,
-        `Temperature: ${period.temperature || "Unknown"}°${period.temperatureUnit || "F"}`,
-        `Wind: ${period.windSpeed || "Unknown"} ${period.windDirection || ""}`,
-        `${period.shortForecast || "No forecast available"}`,
-        "---",
-      ].join("\n"),
-    );
-
-    const forecastText = `Forecast for ${latitude}, ${longitude}:\n\n${formattedForecast.join("\n")}`;
-
-    return {
-      content: [
-        {
-          type: "text",
-          text: forecastText,
-        },
-      ],
-    };
   },
 );
-
 
 async function main() {
   const transport = new StdioServerTransport();
