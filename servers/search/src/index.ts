@@ -104,7 +104,7 @@ server.tool(
 let transport: SSEServerTransport | null = null;
 
 app.get("/sse", (req, res) => {
-  console.log("SSE连接已接收");
+  console.log("SSE连接已接收", new Date().toISOString());
   transport = new SSEServerTransport("/messages", res);
   server.connect(transport);
 });
@@ -113,6 +113,16 @@ app.post("/messages", (req, res) => {
     if (transport) {
       transport.handlePostMessage(req, res);
   }
+});
+
+app.get("/", (req, res) => {
+  res.send(`
+    <h1>web search mcp service</h1>
+    <ul>
+      <li><a href="/health">/health</a> - 健康检查端点</li>
+      <li><a href="/sse">/sse</a> - SSE连接端点</li>
+    </ul>
+  `);
 });
 
 app.listen(PORT, HOST, () => {
