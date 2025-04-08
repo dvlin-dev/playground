@@ -15,7 +15,7 @@ const server = new McpServer({
 
 server.tool(
   "get-forecast",
-  "Get weather forecast for a location",
+  "Get weather forecast of this day for a location",
   {
     adcode: z.string().describe("adcode of the location, adcode is a 6-digit number, from amap.com"),
     extensions: z.enum(["base", "all"]).optional().describe("Weather type: 'base' for current weather, 'all' for forecast"),
