@@ -26,6 +26,7 @@ server.tool(
     const stateCode = state.toUpperCase();
     const alertsUrl = `${NWS_API_BASE}/alerts?area=${stateCode}`;
     const alertsData = await makeNWSRequest<AlertsResponse>(alertsUrl);
+    console.log('get-alerts', alertsData);
 
     if (!alertsData) {
       return {
@@ -75,7 +76,7 @@ server.tool(
     // Get grid point data
     const pointsUrl = `${NWS_API_BASE}/points/${latitude.toFixed(4)},${longitude.toFixed(4)}`;
     const pointsData = await makeNWSRequest<PointsResponse>(pointsUrl);
-
+    console.log('get-forecast', pointsData);
     if (!pointsData) {
       return {
         content: [
@@ -152,7 +153,7 @@ server.tool(
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error("Weather MCP Server running on stdio");
+  console.info("Weather MCP Server running on stdio");
 }
 
 main().catch((error) => {

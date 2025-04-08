@@ -1,8 +1,5 @@
-import { Anthropic } from "@anthropic-ai/sdk";
-import {
-  MessageParam,
-  Tool,
-} from "@anthropic-ai/sdk/resources/messages/messages.mjs";
+import OpenAI from "openai";
+import { ChatCompletionMessageParam, ChatCompletionTool } from "openai/resources/chat/completions";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import readline from "readline/promises";
@@ -19,12 +16,12 @@ if (!API_KEY) {
 
 class MCPClient {
   private mcp: Client;
-  private anthropic: Anthropic;
+  private openai: OpenAI;
   private transport: StdioClientTransport | null = null;
-  private tools: Tool[] = [];
+  private tools: ChatCompletionTool[] = [];
 
   constructor() {
-    this.anthropic = new Anthropic({
+    this.openai = new OpenAI({
       apiKey: API_KEY,
       baseURL: API_URL,
     });
@@ -53,14 +50,17 @@ class MCPClient {
       const toolsResult = await this.mcp.listTools();
       this.tools = toolsResult.tools.map((tool) => {
         return {
-          name: tool.name,
-          description: tool.description,
-          input_schema: tool.inputSchema,
+          type: "function",
+          function: {
+            name: tool.name,
+            description: tool.description,
+            parameters: tool.inputSchema,
+          }
         };
       });
       console.log(
         "Connected to server with tools:",
-        this.tools.map(({ name }) => name)
+        this.tools.map(({ function: { name } }) => name)
       );
     } catch (e) {
       console.log("Failed to connect to MCP server: ", e);
@@ -70,63 +70,67 @@ class MCPClient {
 
   async processQuery(query: string) {
     try {
-      const messages: MessageParam[] = [
+      const messages: ChatCompletionMessageParam[] = [
         {
           role: "user",
           content: query,
         },
       ];
   
-      console.log(API_KEY,API_MODEL, API_URL);
-    
-      const response = await this.anthropic.messages.create({
-        model: API_MODEL || 'claude-3-5-sonnet-20241022',
+      const response = await this.openai.chat.completions.create({
+        model: API_MODEL || 'gpt-4o',
         max_tokens: 1000,
         messages,
         tools: this.tools,
       });
   
-      console.log(response);
-    
       const finalText = [];
       const toolResults = [];
     
-      for (const content of response.content) {
-        if (content.type === "text") {
-          finalText.push(content.text);
-        } else if (content.type === "tool_use") {
-          const toolName = content.name;
-          const toolArgs = content.input as { [x: string]: unknown } | undefined;
-    
+      if (response.choices[0]?.message?.tool_calls?.length) {
+        const toolCalls = response.choices[0].message.tool_calls;
+        
+        for (const toolCall of toolCalls) {
+          const toolName = toolCall.function.name;
+          const toolArgs = JSON.parse(toolCall.function.arguments);
+          
           const result = await this.mcp.callTool({
             name: toolName,
             arguments: toolArgs,
           });
+          
           toolResults.push(result);
           finalText.push(
             `[Calling tool ${toolName} with args ${JSON.stringify(toolArgs)}]`
           );
     
           messages.push({
-            role: "user",
+            role: "assistant",
+            tool_calls: [toolCall],
+          });
+          
+          messages.push({
+            role: "tool",
+            tool_call_id: toolCall.id,
             content: result.content as string,
           });
     
-          const response = await this.anthropic.messages.create({
-            model: "claude-3-5-sonnet-20241022",
+          const followUpResponse = await this.openai.chat.completions.create({
+            model: API_MODEL || 'gpt-4o',
             max_tokens: 1000,
             messages,
           });
     
-          finalText.push(
-            response.content[0].type === "text" ? response.content[0].text : ""
-          );
+          finalText.push(followUpResponse.choices[0]?.message?.content || "");
         }
+      } else if (response.choices[0]?.message?.content) {
+        finalText.push(response.choices[0].message.content);
       }
     
       return finalText.join("\n");
     } catch (error) {
       console.log('processQueryerror:', error);
+      throw error;
     }
   }
 
