@@ -7,7 +7,14 @@
     "search": "./build/index.js"
   },
   "scripts": {
-    "build": "tsc && chmod 755 build/index.js"
+    "build": "tsc && chmod 755 build/index.js",
+    "start": "node build/index.js",
+    "dev": "tsc --watch & node --watch build/index.js",
+    "docker:build": "docker build -t search-service .",
+    "docker:run": "docker run -p 5101:5101 -e EXA_API_KEY=$EXA_API_KEY search-service",
+    "docker:compose": "docker-compose up -d",
+    "docker:logs": "docker-compose logs -f",
+    "docker:stop": "docker-compose down"
   },
   "files": [
     "build"

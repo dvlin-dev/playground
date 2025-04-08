@@ -1,8 +1,11 @@
 import express from "express";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { search, SearchParams } from "./handle.js";
+import { search, SearchParams, SearchError } from "./handle.js";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
+
+const PORT = process.env.PORT || 5101;
+const HOST = process.env.HOST || '0.0.0.0'; 
 
 const app = express();
 
@@ -14,6 +17,11 @@ const server = new McpServer({
     resources: {},
     tools: {},
   },
+});
+
+// 添加基本的健康检查端点
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
 server.tool(
@@ -73,11 +81,19 @@ server.tool(
       };
     } catch (error) {
       console.error("搜索出错:", error);
+      let errorMessage = "搜索时发生错误";
+      
+      if (error instanceof SearchError) {
+        errorMessage = `搜索错误 (${error.status}): ${error.message}`;
+      } else {
+        errorMessage = `搜索时发生错误: ${error instanceof Error ? error.message : String(error)}`;
+      }
+      
       return {
         content: [
           {
             type: "text",
-            text: `搜索时发生错误: ${error instanceof Error ? error.message : String(error)}`,
+            text: errorMessage,
           },
         ],
       };
@@ -94,13 +110,11 @@ app.get("/sse", (req, res) => {
 });
 
 app.post("/messages", (req, res) => {
-  if (transport) {
-    transport.handlePostMessage(req, res);
+    if (transport) {
+      transport.handlePostMessage(req, res);
   }
 });
 
-const port = 5101;
-
-app.listen(port, '127.0.0.1', () => {
-  console.log(`服务器运行于 http://127.0.0.1:${port}`);
+app.listen(PORT, HOST, () => {
+  console.log(`服务器运行于 http://${HOST}:${PORT}`);
 });
