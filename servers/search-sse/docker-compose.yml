@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  search-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: search-service
+    restart: unless-stopped
+    ports:
+      - "5101:5101"
+    environment:
+      - NODE_ENV=production
+      - PORT=5101
+      - HOST=0.0.0.0
+      # 可以从外部设置API密钥
+      - EXA_API_KEY=${EXA_API_KEY}
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:5101/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    volumes:
+      # 可选：挂载外部配置文件
+      - ./logs:/app/logs
+    networks:
+      - search-network
+
+networks:
+  search-network:
+    driver: bridge 
