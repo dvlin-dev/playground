@@ -1,9 +1,9 @@
 import OpenAI from "openai";
 import { ChatCompletionMessageParam, ChatCompletionTool } from "openai/resources/chat/completions";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import readline from "readline/promises";
 import dotenv from "dotenv";
+import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 
 dotenv.config();
 
@@ -17,7 +17,7 @@ if (!API_KEY) {
 class MCPClient {
   private mcp: Client;
   private openai: OpenAI;
-  private transport: StdioClientTransport | null = null;
+  private transport: SSEClientTransport | null = null;
   private tools: ChatCompletionTool[] = [];
 
   constructor() {
@@ -25,27 +25,26 @@ class MCPClient {
       apiKey: API_KEY,
       baseURL: API_URL,
     });
-    this.mcp = new Client({ name: "mcp-client-cli", version: "1.0.0" });
+    this.mcp = new Client({ 
+      name: "mcp-client-cli", 
+      version: "1.0.0",
+      capabilities: {
+        resources: {},
+        tools: {},
+      }
+    });
   }
   
-  async connectToServer(serverScriptPath: string) {
+  async connectToServer(sseUrl: string) {
+    console.log("Connecting to server at:", sseUrl);
     try {
-      const isJs = serverScriptPath.endsWith(".js");
-      const isPy = serverScriptPath.endsWith(".py");
-      if (!isJs && !isPy) {
-        throw new Error("Server script must be a .js or .py file");
-      }
-      const command = isPy
-        ? process.platform === "win32"
-          ? "python"
-          : "python3"
-        : process.execPath;
+      const url = new URL(sseUrl);
       
-      this.transport = new StdioClientTransport({
-        command,
-        args: [serverScriptPath],
-      });
-      this.mcp.connect(this.transport);
+      this.transport = new SSEClientTransport(
+        url
+      );
+      
+      await this.mcp.connect(this.transport);
       
       const toolsResult = await this.mcp.listTools();
       this.tools = toolsResult.tools.map((tool) => {
@@ -164,7 +163,7 @@ class MCPClient {
 
 async function main() {
   if (process.argv.length < 3) {
-    console.log("Usage: node index.ts <path_to_server_script>");
+    console.log("Usage: node index.ts <sse_url>");
     return;
   }
   const mcpClient = new MCPClient();

@@ -1,7 +1,10 @@
+import express from "express";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { getWeather } from "./handle.js";
+import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
+
+const app = express();
 
 // Create server instance
 const server = new McpServer({
@@ -98,13 +101,21 @@ server.tool(
   },
 );
 
-async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.info("Weather MCP Server running on stdio");
-}
 
-main().catch((error) => {
-  console.error("Fatal error in main():", error);
-  process.exit(1);
+let transport: SSEServerTransport | null = null;
+
+app.get("/sse", (req, res) => {
+  console.log("SSE connection received");
+  transport = new SSEServerTransport("/messages", res);
+  server.connect(transport);
+});
+
+app.post("/messages", (req, res) => {
+  if (transport) {
+    transport.handlePostMessage(req, res);
+  }
+});
+
+app.listen(5100,'127.0.0.1',()=>{
+  console.log("Server is running on http://127.0.0.1:5100");
 });
