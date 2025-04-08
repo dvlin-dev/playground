@@ -4,7 +4,7 @@ import { z } from "zod";
 import { search, SearchParams, SearchError } from "./handle.js";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 
-const PORT = process.env.PORT || 5101;
+const PORT = Number(process.env.PORT) || 5101;
 const HOST = process.env.HOST || '0.0.0.0'; 
 
 const app = express();
