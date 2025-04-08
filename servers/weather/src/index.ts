@@ -116,6 +116,8 @@ app.post("/messages", (req, res) => {
   }
 });
 
-app.listen(5100,'127.0.0.1',()=>{
-  console.log("Server is running on http://127.0.0.1:5100");
+const port = 5100;
+
+app.listen(port, '127.0.0.1',()=>{
+  console.log(`Server is running on http://127.0.0.1:${port}`);
 });
