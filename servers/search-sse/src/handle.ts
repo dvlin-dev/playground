@@ -91,29 +91,18 @@ export interface SearchParams {
   };
 }
 
-// 定义错误类型
-export class SearchError extends Error {
-  status: number;
-  
-  constructor(message: string, status: number = 500) {
-    super(message);
-    this.name = 'SearchError';
-    this.status = status;
-  }
-}
-
 export async function search(params: SearchParams): Promise<SearchResponse> {
   const url = `${EXA_API_BASE}/search`;
   
   try {
     // 检查API密钥是否设置
     if (!EXA_API_KEY) {
-      throw new SearchError('API密钥未设置，请检查环境变量EXA_API_KEY', 401);
+      throw new Error('API密钥未设置，请检查环境变量EXA_API_KEY');
     }
     
     // 检查查询参数
     if (!params.query || params.query.trim() === '') {
-      throw new SearchError('搜索查询不能为空', 400);
+      throw new Error('搜索查询不能为空');
     }
     
     const response = await fetch(url, {
@@ -126,36 +115,12 @@ export async function search(params: SearchParams): Promise<SearchResponse> {
     });
     
     if (!response.ok) {
-      const errorText = await response.text();
-      let errorMessage = `Exa API 错误: ${response.status}`;
-      
-      try {
-        // 尝试解析错误响应为JSON
-        const errorJson = JSON.parse(errorText);
-        if (errorJson.message) {
-          errorMessage += ` - ${errorJson.message}`;
-        } else {
-          errorMessage += ` - ${errorText}`;
-        }
-      } catch {
-        errorMessage += ` - ${errorText}`;
-      }
-      
-      throw new SearchError(errorMessage, response.status);
+      throw new Error(response.statusText);
     }
     
     const data: SearchResponse = await response.json();
     return data;
   } catch (error) {
-    // 处理不同类型的错误
-    if (error instanceof SearchError) {
-      throw error;
-    } else if (error instanceof TypeError) {
-      // 网络错误或其他TypeError
-      throw new SearchError(`网络请求错误: ${error.message}`, 503);
-    } else {
-      // 其他未知错误
-      throw new SearchError(`搜索过程中发生未知错误: ${error instanceof Error ? error.message : String(error)}`);
-    }
+    throw error;
   }
 }

@@ -1,13 +1,20 @@
 import express from "express";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { search, SearchParams, SearchError } from "./handle.js";
+import { search, SearchParams } from "./handle.js";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
+import cors from "cors";
 
 const PORT = Number(process.env.PORT) || 5101;
 const HOST = process.env.HOST || '0.0.0.0'; 
 
 const app = express();
+
+// 启用CORS
+app.use(cors({
+  methods: ['GET', 'POST', 'OPTIONS'],
+  credentials: true
+}));
 
 // 创建服务器实例
 const server = new McpServer({
@@ -67,21 +74,12 @@ server.tool(
           },
         ],
       };
-    } catch (error) {
-      console.error("搜索出错:", error);
-      let errorMessage = "搜索时发生错误";
-      
-      if (error instanceof SearchError) {
-        errorMessage = `搜索错误 (${error.status}): ${error.message}`;
-      } else {
-        errorMessage = `搜索时发生错误: ${error instanceof Error ? error.message : String(error)}`;
-      }
-      
+    } catch (error: any) {
       return {
         content: [
           {
             type: "text",
-            text: errorMessage,
+            text: error.message,
           },
         ],
       };
