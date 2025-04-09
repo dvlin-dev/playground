@@ -100,11 +100,7 @@ let transport: SSEServerTransport | null = null;
 
 
 app.get("/sse", (req, res) => {
-  console.log("SSE连接已接收", new Date().toISOString());
-  
-  // 客户端断开连接时清理transport
   req.on('close', () => {
-    console.log("SSE连接已关闭", new Date().toISOString());
     transport = null;
   });
   
