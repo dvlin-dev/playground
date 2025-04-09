@@ -10,6 +10,16 @@ const HOST = process.env.HOST || '0.0.0.0';
 
 const app = express();
 
+// 全局未捕获异常处理
+process.on('uncaughtException', (error) => {
+  console.error('未捕获的异常:', error);
+  // 不退出进程，让服务继续运行
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('未处理的Promise拒绝:', reason);
+});
+
 // 启用CORS
 app.use(cors({
   methods: ['GET', 'POST', 'OPTIONS'],
@@ -62,7 +72,6 @@ server.tool(
           ],
         };
       }
-      console.info("Search result:", searchResult.results);
       
       const stringifyResults = JSON.stringify(searchResult.results);
 
@@ -89,17 +98,40 @@ server.tool(
 
 let transport: SSEServerTransport | null = null;
 
+
 app.get("/sse", (req, res) => {
   console.log("SSE连接已接收", new Date().toISOString());
+  
+  // 客户端断开连接时清理transport
+  req.on('close', () => {
+    console.log("SSE连接已关闭", new Date().toISOString());
+    transport = null;
+  });
+  
   transport = new SSEServerTransport("/messages", res);
-  server.connect(transport);
+  
+  try {
+    server.connect(transport);
+  } catch (error) {
+    console.error("建立SSE连接时出错:", error);
+    res.end();
+    transport = null;
+  }
 });
 
 app.post("/messages", (req, res) => {
-    if (transport) {
-      transport.handlePostMessage(req, res);
-  }
+    try {
+      if (transport) {
+        transport.handlePostMessage(req, res);
+      } else {
+        res.status(503).json({ error: "SSE连接尚未建立" });
+      }
+    } catch (error) {
+      console.error("处理消息时出错:", error);
+      res.status(500).json({ error: "处理消息时出错" });
+    }
 });
+
 
 app.get("/", (req, res) => {
   res.send(`

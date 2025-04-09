@@ -53,7 +53,7 @@ node build/index.js
 ```bash
 docker build --platform linux/amd64 -t search-mcp-service .     
 
-docker tag search-service dvlindev/search-mcp-service
+docker tag search-mcp-service dvlindev/search-mcp-service
 docker push dvlindev/search-mcp-service
 ```
 
