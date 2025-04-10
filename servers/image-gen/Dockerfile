@@ -9,7 +9,7 @@ COPY package*.json ./
 # 安装依赖
 RUN npm install
 
-# 复制源代码
+# 复制源代码（排除node_modules）
 COPY . .
 
 # 构建项目
