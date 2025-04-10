@@ -1,0 +1,23 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "imageurl2cfr2",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-04-10",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"assets": {
+		"binding": "ASSETS",
+		"directory": "./public"
+	},
+	"observability": {
+		"enabled": true
+	},
+  "r2_buckets": [
+    {
+      "bucket_name": "playground",
+      "binding": "playground"
+    }
+  ]
+
+}
