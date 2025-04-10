@@ -15,19 +15,25 @@ export interface Env {
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-    // Only allow GET requests
-    if (request.method !== "GET") {
+    // Only allow POST requests
+    if (request.method !== "POST") {
       return new Response("Method not allowed", { status: 405 });
     }
 
     try {
-      const url = new URL(request.url);
+      // Parse request body as JSON
+      let requestBody: { url?: string };
+      try {
+        requestBody = await request.json();
+      } catch (error) {
+        return new Response("Invalid JSON body", { status: 400 });
+      }
 
-      // Check if an image URL is provided in the query parameters
-      const imageUrl = url.searchParams.get("url");
+      // Check if an image URL is provided in the body
+      const imageUrl = requestBody.url;
 
       if (!imageUrl) {
-        return new Response("Missing image URL parameter. Please include '?url=https://example.com/image.jpg'", {
+        return new Response("Missing image URL in request body. Please include '{\"url\":\"https://example.com/image.jpg\"}'", {
           status: 400
         });
       }
