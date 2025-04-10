@@ -1,6 +1,6 @@
 import express from "express";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
+import { z  } from "zod";
 import { search, SearchParams } from "./handle.js";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import cors from "cors";
@@ -96,38 +96,51 @@ server.tool(
   },
 );
 
-let transport: SSEServerTransport | null = null;
-
+// 使用 Map 存储多个连接
+const connections = new Map<string, SSEServerTransport>();
 
 app.get("/sse", (req, res) => {
+  // 为每个连接生成唯一的ID
+  const connectionId = Date.now().toString();
+  
   req.on('close', () => {
-    transport = null;
+    console.log('连接关闭', connectionId);
+    connections.delete(connectionId);
   });
   
-  transport = new SSEServerTransport("/messages", res);
+  const transport = new SSEServerTransport(`/messages/${connectionId}`, res);
+  connections.set(connectionId, transport);
   
   try {
     server.connect(transport);
   } catch (error) {
     console.error("建立SSE连接时出错:", error);
+    connections.delete(connectionId);
     res.end();
-    transport = null;
   }
 });
 
-app.post("/messages", (req, res) => {
-    try {
-      if (transport) {
-        transport.handlePostMessage(req, res);
-      } else {
-        res.status(503).json({ error: "SSE连接尚未建立" });
-      }
-    } catch (error) {
-      console.error("处理消息时出错:", error);
-      res.status(500).json({ error: "处理消息时出错" });
+app.post("/messages/:connectionId", (req, res) => {
+  try {
+    // 优先从URL参数获取连接ID，如果没有则尝试从请求头获取
+    let connectionId = req.params.connectionId;
+    if (!connectionId) {
+      connectionId = req.headers['x-connection-id'] as string;
     }
+    
+    console.info("连接", req.params.connectionId);
+    const transport = connectionId ? connections.get(connectionId) : null;
+    
+    if (transport) {
+      transport.handlePostMessage(req, res);
+    } else {
+      res.status(503).json({ error: "SSE连接尚未建立或已失效" });
+    }
+  } catch (error) {
+    console.error("处理消息时出错:", error);
+    res.status(500).json({ error: "处理消息时出错" });
+  }
 });
-
 
 app.get("/", (req, res) => {
   res.send(`
