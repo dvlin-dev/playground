@@ -1,12 +1,12 @@
 # docker
-docker build --platform linux/amd64 -t search-mcp-http -f Dockerfile .
+docker build --platform linux/amd64 -t mcp-search -f Dockerfile .
 
-docker tag search-mcp-http dvlindev/search-mcp-http
-docker push dvlindev/search-mcp-http
+docker tag mcp-search dvlindev/mcp-search
+docker push dvlindev/mcp-search
 
-docker pull dvlindev/search-mcp-http
-docker run -d -p 0.0.0.0:5102:5102 -e EXA_API_KEY=your_api_key_here --name search-mcp-http dvlindev/search-mcp-http
-# search-mcp-http
+docker pull dvlindev/mcp-search
+docker run -d -p 0.0.0.0:5102:5102 -e EXA_API_KEY=your_api_key_here --name mcp-search dvlindev/mcp-search
+# mcp-search
 
 A Model Context Protocol (MCP) server built with mcp-framework.
 
