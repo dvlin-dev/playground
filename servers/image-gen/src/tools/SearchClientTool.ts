@@ -49,6 +49,8 @@ class ImageGenClientTool extends MCPTool<ImageGenClientInput> {
 
       const url = response.data[0].url;
 
+      console.info('image url: ', url)
+
       if (!url) {
         return {
           content: [
