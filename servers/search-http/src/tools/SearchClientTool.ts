@@ -137,7 +137,7 @@ class SearchClientTool extends MCPTool<SearchClientInput> {
           ],
         };
       }
-      console.info("Search result:", searchResult.results);
+      console.info("search query:", query);
       
       const stringifyResults = JSON.stringify(searchResult.results);
 

@@ -1,12 +1,13 @@
 # docker
-docker build --platform linux/amd64 -t search-mcp-http -f Dockerfile .
+docker build --platform linux/amd64 -t mcp-image-gen -f Dockerfile .
 
-docker tag search-mcp-http dvlindev/search-mcp-http
-docker push dvlindev/search-mcp-http
+docker tag mcp-image-gen dvlindev/mcp-image-gen
+docker push dvlindev/mcp-image-gen
 
-docker pull dvlindev/search-mcp-http
-docker run -d -p 0.0.0.0:5102:5102 EXA_API_KEY=your_api_key_here --name search-mcp-http dvlindev/search-mcp-http
-# search-mcp-http
+docker pull dvlindev/mcp-image-gen
+docker run -d -p 0.0.0.0:5103:5100 -e API_URL=url -e API_KEY=key --name mcp-image-gen dvlindev/mcp-image-gen
+
+# mcp-image-gen
 
 A Model Context Protocol (MCP) server built with mcp-framework.
 
@@ -24,7 +25,7 @@ npm run build
 ## Project Structure
 
 ```
-search-mcp-http/
+mcp-image-gen/
 ├── src/
 │   ├── tools/        # MCP Tools
 │   │   └── ExampleTool.ts
