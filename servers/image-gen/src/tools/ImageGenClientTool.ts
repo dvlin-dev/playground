@@ -62,37 +62,6 @@ class ImageGenClientTool extends MCPTool<ImageGenClientInput> {
         };
       }
       
-      // const transFormUrl = `https://imageurl2cfr2.moryflow.com/`;
-      
-      // try {
-      //   const transformResponse = await fetch(transFormUrl, {
-      //     method: 'POST',
-      //     headers: {
-      //       'Content-Type': 'application/json',
-      //     },
-      //     body: JSON.stringify({ url })
-      //   });
-        
-      //   try {
-      //     const transformData = await transformResponse.json();
-      //     console.info('transformData: ', transformData);
-          
-      //     if (transformData.success && transformData.url) {
-      //       return {
-      //         content: [
-      //           {
-      //             type: "image",
-      //             text: transformData.url,
-      //           },
-      //         ],
-      //       };
-      //     }
-      //   } catch (jsonError) {
-      //     console.error('JSON parse error:', jsonError);
-      //   }
-      // } catch (transformError) {
-      //   console.error('Transform URL error:', transformError);
-      // }
       
       return {
         content: [
