@@ -21,6 +21,8 @@ export const API_URL = process.env.API_URL;
 export const TRANSCODE_URL = process.env.TRANSCODE_URL || '';
 export const TRANSCODE_SECRET = process.env.TRANSCODE_SECRET;
 
+console.info('config:', API_KEY, API_URL, TRANSCODE_URL, TRANSCODE_SECRET);
+
 interface ImageGenClientInput {
   prompt: string
 }
@@ -63,18 +65,19 @@ class ImageGenClientTool extends MCPTool<ImageGenClientInput> {
       }
       
       try {
+        console.info('start transcode url: ', url);
         const transformResponse = await fetch(TRANSCODE_URL, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ url, secret: TRANSCODE_SECRET, directory: 'playground/transcode'})
+          body: JSON.stringify({ url, secret: TRANSCODE_SECRET, directory: 'playground/transcode', cropWatermark: true})
         });
         
         try {
           const transformData = await transformResponse.json();
           const transcodeUrl = transformData.url;
-          
+
           console.info('transcodeUrl: ', transcodeUrl);
 
           if (transcodeUrl) {
