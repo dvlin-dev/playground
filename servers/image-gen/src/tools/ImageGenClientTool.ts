@@ -18,6 +18,8 @@ if (existsSync(envPath)) {
 
 export const API_KEY = process.env.API_KEY;
 export const API_URL = process.env.API_URL;
+export const TRANSCODE_URL = process.env.TRANSCODE_URL || '';
+export const TRANSCODE_SECRET = process.env.TRANSCODE_SECRET;
 
 interface ImageGenClientInput {
   prompt: string
@@ -49,8 +51,6 @@ class ImageGenClientTool extends MCPTool<ImageGenClientInput> {
 
       const url = response.data[0].url;
 
-      console.info('image url: ', url)
-
       if (!url) {
         return {
           content: [
@@ -62,6 +62,37 @@ class ImageGenClientTool extends MCPTool<ImageGenClientInput> {
         };
       }
       
+      try {
+        const transformResponse = await fetch(TRANSCODE_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ url, secret: TRANSCODE_SECRET, directory: 'playground/transcode'})
+        });
+        
+        try {
+          const transformData = await transformResponse.json();
+          const transcodeUrl = transformData.url;
+          
+          console.info('transcodeUrl: ', transcodeUrl);
+
+          if (transcodeUrl) {
+            return {
+              content: [
+                {
+                  type: "image",
+                  text: transcodeUrl,
+                },
+              ],
+            };
+          }
+        } catch (jsonError) {
+          console.error('JSON parse error:', jsonError);
+        }
+      } catch (transformError) {
+        console.error('Transform URL error:', transformError);
+      }
       
       return {
         content: [
