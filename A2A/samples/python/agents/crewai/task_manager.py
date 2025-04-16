@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 class AgentTaskManager(InMemoryTaskManager):
-  """Agent Task Manager, handles task routing and response packing."""
+  """代理任务管理器，负责任务路由和响应打包。"""
 
   def __init__(self, agent: ImageGenerationAgent):
     super().__init__()

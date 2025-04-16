@@ -1,0 +1,11 @@
+{
+  "/_app": "pages/_app.js",
+  "/_error": "pages/_error.js",
+  "/_document": "pages/_document.js",
+  "/agents": "pages/agents.js",
+  "/conversation": "pages/conversation.js",
+  "/event-list": "pages/event-list.js",
+  "/": "pages/index.js",
+  "/settings": "pages/settings.js",
+  "/task-list": "pages/task-list.js"
+}

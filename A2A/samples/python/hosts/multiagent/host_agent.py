@@ -33,10 +33,9 @@ from common.types import (
 
 
 class HostAgent:
-  """The host agent.
+  """主机代理。
 
-  This is the agent responsible for choosing which remote agents to send
-  tasks to and coordinate their work.
+这是负责选择将任务发送到哪些远程代理并协调它们工作的代理。
   """
 
   def __init__(
@@ -74,8 +73,7 @@ class HostAgent:
         instruction=self.root_instruction,
         before_model_callback=self.before_model_callback,
         description=(
-            "This agent orchestrates the decomposition of the user request into"
-            " tasks that can be performed by the child agents."
+            "这个代理负责将用户请求分解为可以由子代理执行的任务。"
         ),
         tools=[
             self.list_remote_agents,
@@ -85,29 +83,27 @@ class HostAgent:
 
   def root_instruction(self, context: ReadonlyContext) -> str:
     current_agent = self.check_state(context)
-    return f"""You are a expert delegator that can delegate the user request to the
-appropriate remote agents.
+    return f"""您是一位专家级的委托者，可以将用户请求委托给适当的远程代理。
 
-Discovery:
-- You can use `list_remote_agents` to list the available remote agents you
-can use to delegate the task.
+发现：
 
-Execution:
-- For actionable tasks, you can use `create_task` to assign tasks to remote agents to perform.
-Be sure to include the remote agent name when you response to the user.
+- 你可以使用 `list_remote_agents` 来列出可用的远程代理，以便委托任务。
 
-You can use `check_pending_task_states` to check the states of the pending
-tasks.
+执行：
+- 对于可操作的任务，你可以使用 `create_task` 来分配任务给远程代理执行。
+- 请确保在响应用户时包含远程代理名称。
 
-Please rely on tools to address the request, don't make up the response. If you are not sure, please ask the user for more details.
-Focus on the most recent parts of the conversation primarily.
+你可以使用 `check_pending_task_states` 来检查待处理任务的状态。
 
-If there is an active agent, send the request to that agent with the update task tool.
+请依赖工具来解决请求，不要自己编造响应。如果你不确定，请向用户询问更多细节。
+专注于对话的最新部分。
 
-Agents:
+如果有一个活跃的代理，请使用更新任务工具将请求发送给该代理。
+
+代理:
 {self.agents}
 
-Current agent: {current_agent['active_agent']}
+当前代理: {current_agent['active_agent']}
 """
 
   def check_state(self, context: ReadonlyContext):
@@ -127,7 +123,7 @@ Current agent: {current_agent['active_agent']}
       state['session_active'] = True
 
   def list_remote_agents(self):
-    """List the available remote agents you can use to delegate the task."""
+    """列出可用的远程代理，以便委托任务。"""
     if not self.remote_agent_connections:
       return []
 
@@ -143,17 +139,21 @@ Current agent: {current_agent['active_agent']}
       agent_name: str,
       message: str,
       tool_context: ToolContext):
-    """Sends a task either streaming (if supported) or non-streaming.
+    """发送任务，可以流式传输（如果支持）或非流式传输。
 
-    This will send a message to the remote agent named agent_name.
+这将向名为agent_name的远程代理发送消息。
 
-    Args:
-      agent_name: The name of the agent to send the task to.
-      message: The message to send to the agent for the task.
-      tool_context: The tool context this method runs in.
+参数：
 
-    Yields:
-      A dictionary of JSON data.
+agent_name：要发送任务的代理的名称。
+
+message：要发送给代理的任务消息。
+
+tool_context：此方法运行的工具上下文。
+
+返回：
+
+一个JSON数据的字典。
     """
     if agent_name not in self.remote_agent_connections:
       raise ValueError(f"Agent {agent_name} not found")

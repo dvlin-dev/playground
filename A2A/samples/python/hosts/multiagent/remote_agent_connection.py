@@ -15,7 +15,7 @@ TaskCallbackArg = Task | TaskStatusUpdateEvent | TaskArtifactUpdateEvent
 TaskUpdateCallback = Callable[[TaskCallbackArg], Task]
 
 class RemoteAgentConnections:
-  """A class to hold the connections to the remote agents."""
+  """一个类，用于保存对远程代理的连接。"""
 
   def __init__(self, agent_card: AgentCard):
     self.agent_client = A2AClient(agent_card)

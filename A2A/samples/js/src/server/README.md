@@ -1,6 +1,6 @@
 # A2A Server (JS)
 
-This directory contains a TypeScript server implementation for the Agent-to-Agent (A2A) communication protocol, built using Express.js.
+此目录包含使用Express.js构建的Agent-to-Agent（A2A）通信协议的TypeScript服务器实现。
 
 ## Basic Usage (Conceptual)
 
