@@ -34,7 +34,7 @@ const openaiClient = observeOpenAI(new OpenAI({
 setDefaultOpenAIClient(openaiClient); // Pass the OpenAI client instance
 setOpenAIAPI('chat_completions');
 // Enable tracing to work with Langfuse
-// setTracingDisabled(false);
+setTracingDisabled(false);
 
 // ---- 通用工具（可被多个 Agent 复用） ----
 const getWeather = tool({

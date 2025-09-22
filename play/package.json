@@ -17,7 +17,8 @@
     "@opentelemetry/sdk-node": "^0.205.0",
     "dotenv": "^17.2.2",
     "openai": "^5.22.0",
-    "zod": "^4.1.11"
+    "zod": "^4.1.11",
+    "zod-to-json-schema": "^3.24.6"
   },
   "devDependencies": {
     "tsx": "^4.20.5"
