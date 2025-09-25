@@ -52,6 +52,7 @@ const getWeather = tool({
     additionalProperties: false,
   },
   async execute(input) {
+    console.log(`[debug] 正在查询 ${input} 的天气`);
     const { city } = input as { city: string };
     console.log(`[debug] 正在查询 ${city} 的天气`);
     return `${city} 多云，气温 12-22°C，无风`;
