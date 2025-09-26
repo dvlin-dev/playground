@@ -1,0 +1,487 @@
+[V0_FILE]css:file="app/globals.css"
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: oklch(0.98 0 0);
+  --foreground: oklch(0.08 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.08 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.08 0 0);
+  --primary: oklch(0.08 0 0);
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.94 0 0);
+  --secondary-foreground: oklch(0.08 0 0);
+  --muted: oklch(0.94 0 0);
+  --muted-foreground: oklch(0.45 0 0);
+  --accent: oklch(0.94 0 0);
+  --accent-foreground: oklch(0.08 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.9 0 0);
+  --input: oklch(0.9 0 0);
+  --ring: oklch(0.6 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.5rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.08 0 0);
+  --foreground: oklch(0.98 0 0);
+  --card: oklch(0.08 0 0);
+  --card-foreground: oklch(0.98 0 0);
+  --popover: oklch(0.08 0 0);
+  --popover-foreground: oklch(0.98 0 0);
+  --primary: oklch(0.98 0 0);
+  --primary-foreground: oklch(0.08 0 0);
+  --secondary: oklch(0.15 0 0);
+  --secondary-foreground: oklch(0.98 0 0);
+  --muted: oklch(0.15 0 0);
+  --muted-foreground: oklch(0.6 0 0);
+  --accent: oklch(0.15 0 0);
+  --accent-foreground: oklch(0.98 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.15 0 0);
+  --input: oklch(0.15 0 0);
+  --ring: oklch(0.4 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+[V0_FILE]typescriptreact:file="app/layout.tsx" isFixed="true" isQuickEdit="true"
+import type React from "react"
+import type { Metadata } from "next"
+import { GeistSans } from "geist/font/sans"
+import { GeistMono } from "geist/font/mono"
+import { Analytics } from "@vercel/analytics/next"
+import { Suspense } from "react"
+import "./globals.css"
+
+export const metadata: Metadata = {
+  title: "Apple Watch - 重新定义智能手表",
+  description: "探索 Apple Watch 的强大功能，健康监测，智能通知，精美设计",
+  generator: "v0.app",
+}
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
+  return (
+    <html lang="zh">
+      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} antialiased`}>
+        <Suspense fallback={null}>{children}</Suspense>
+        <Analytics />
+      </body>
+    </html>
+  )
+}
+[V0_FILE]typescriptreact:file="app/page.tsx"
+import { Header } from "@/components/header"
+import { HeroSection } from "@/components/hero-section"
+import { FeaturesSection } from "@/components/features-section"
+import { HealthSection } from "@/components/health-section"
+import { DesignSection } from "@/components/design-section"
+import { Footer } from "@/components/footer"
+
+export default function HomePage() {
+  return (
+    <main className="min-h-screen bg-background">
+      <Header />
+      <HeroSection />
+      <FeaturesSection />
+      <HealthSection />
+      <DesignSection />
+      <Footer />
+    </main>
+  )
+}
+[V0_FILE]typescriptreact:file="components/header.tsx"
+import { Button } from "@/components/ui/button"
+
+export function Header() {
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+      <div className="max-w-7xl mx-auto px-6 py-4">
+        <nav className="flex items-center justify-between">
+          <div className="flex items-center space-x-8">
+            <div className="text-xl font-semibold text-foreground">Apple Watch</div>
+            <div className="hidden md:flex items-center space-x-6 text-sm text-muted-foreground">
+              <a href="#features" className="hover:text-foreground transition-colors">
+                功能
+              </a>
+              <a href="#health" className="hover:text-foreground transition-colors">
+                健康
+              </a>
+              <a href="#design" className="hover:text-foreground transition-colors">
+                设计
+              </a>
+            </div>
+          </div>
+          <Button className="bg-primary text-primary-foreground hover:bg-primary/90">立即购买</Button>
+        </nav>
+      </div>
+    </header>
+  )
+}
+[V0_FILE]typescriptreact:file="components/hero-section.tsx"
+import { Button } from "@/components/ui/button"
+
+export function HeroSection() {
+  return (
+    <section className="pt-24 pb-16 px-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center space-y-8">
+          <div className="space-y-4">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-light text-balance leading-tight">
+              重新定义
+              <br />
+              <span className="font-medium">智能手表13</span>
+            </h1>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto text-balance">
+              Apple Watch  为您的日常生活带来前所未有的便利体验。
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 px-8">
+              了解更多
+            </Button>
+            <Button variant="outline" size="lg" className="px-8 bg-transparent">
+              观看视频
+            </Button>
+          </div>
+        </div>
+
+        <div className="mt-16 relative">
+          <div className="aspect-[16/10] bg-muted rounded-2xl overflow-hidden">
+            <img src="/apple-watch-hero-image-showing-multiple-watch-face.jpg" alt="Apple Watch 产品展示" className="w-full h-full object-cover" />
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+[V0_FILE]typescriptreact:file="components/features-section.tsx"
+export function FeaturesSection() {
+  const features = [
+    {
+      number: "1",
+      title: "智能通知",
+      description: "重要信息即时推送，让您随时保持连接，不错过任何重要时刻。",
+    },
+    {
+      number: "2",
+      title: "健康监测",
+      description: "全天候心率监测、血氧检测和睡眠分析，守护您的健康每一天。",
+    },
+    {
+      number: "3",
+      title: "运动追踪",
+      description: "精准记录各种运动数据，激励您保持活跃的生活方式。",
+    },
+  ]
+
+  return (
+    <section id="features" className="py-20 px-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-light text-balance mb-4">核心功能123</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-balance">
+            探索 Apple Watch 的强大功能，体验科技与生活的完美结合
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-12">
+          {features.map((feature) => (
+            <div key={feature.number} className="text-center space-y-4">
+              <div className="text-6xl font-light text-muted-foreground/30">{feature.number}</div>
+              <h3 className="text-xl font-medium">{feature.title}</h3>
+              <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+[V0_FILE]typescriptreact:file="components/health-section.tsx"
+export function HealthSection() {
+  return (
+    <section id="health" className="py-20 px-6 bg-muted/30">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="space-y-8">
+            <div className="space-y-4">
+              <h2 className="text-3xl md:text-4xl font-light text-balance">
+                健康监测，
+                <br />
+                <span className="font-medium">精准守护</span>
+              </h2>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Apple Watch 配备先进的传感器技术，能够全天候监测您的健康状况， 提供专业级的健康数据分析和个性化建议。
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              <div className="flex items-start space-x-4">
+                <div className="w-2 h-2 bg-primary rounded-full mt-3"></div>
+                <div>
+                  <h4 className="font-medium mb-1">心率监测</h4>
+                  <p className="text-muted-foreground text-sm">实时监测心率变化，及时发现异常情况</p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-4">
+                <div className="w-2 h-2 bg-primary rounded-full mt-3"></div>
+                <div>
+                  <h4 className="font-medium mb-1">血氧检测</h4>
+                  <p className="text-muted-foreground text-sm">随时了解血氧饱和度，关注呼吸健康</p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-4">
+                <div className="w-2 h-2 bg-primary rounded-full mt-3"></div>
+                <div>
+                  <h4 className="font-medium mb-1">睡眠分析</h4>
+                  <p className="text-muted-foreground text-sm">深度分析睡眠质量，优化休息时间</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="aspect-square bg-card rounded-2xl overflow-hidden">
+            <img src="/apple-watch-health-monitoring-interface-showing-he.jpg" alt="健康监测界面" className="w-full h-full object-cover" />
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+[V0_FILE]typescriptreact:file="components/design-section.tsx"
+import { Button } from "@/components/ui/button"
+export function DesignSection() {
+  return (
+    <section id="design" className="py-20 px-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-light text-balance mb-4">精美设计，个性表达</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-balance">
+            多种表带选择，丰富表盘设计，让您的 Apple Watch 成为独特的时尚配饰
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          <div className="aspect-[4/5] bg-card rounded-2xl overflow-hidden">
+            <img src="/apple-watch-with-sport-band-in-elegant-setting.jpg" alt="运动表带" className="w-full h-full object-cover" />
+          </div>
+          <div className="aspect-[4/5] bg-card rounded-2xl overflow-hidden">
+            <img src="/apple-watch-with-leather-band-in-professional-sett.jpg" alt="皮革表带" className="w-full h-full object-cover" />
+          </div>
+          <div className="aspect-[4/5] bg-card rounded-2xl overflow-hidden">
+            <img src="/apple-watch-with-metal-band-in-luxury-setting.jpg" alt="金属表带" className="w-full h-full object-cover" />
+          </div>
+        </div>
+
+        <div className="text-center mt-12">
+          <p className="text-muted-foreground mb-6">探索更多个性化选择</p>
+          <Button className="bg-primary text-primary-foreground hover:bg-primary/90">定制您的 Apple Watch</Button>
+        </div>
+      </div>
+    </section>
+  )
+}
+[V0_FILE]typescriptreact:file="components/footer.tsx"
+import { Button } from "@/components/ui/button"
+export function Footer() {
+  return (
+    <footer className="py-16 px-6 bg-muted/30">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center space-y-8">
+          <div className="space-y-4">
+            <h2 className="text-2xl md:text-3xl font-light text-balance">准备好体验未来了吗？</h2>
+            <p className="text-muted-foreground max-w-xl mx-auto text-balance">
+              立即购买 Apple Watch，开启智能生活新篇章
+            </p>
+          </div>
+
+          <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 px-8">
+            立即购买
+          </Button>
+        </div>
+
+        <div className="mt-16 pt-8 border-t border-border">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <div className="text-sm text-muted-foreground">© 2025 Apple Watch 介绍网站</div>
+            <div className="flex space-x-6 text-sm text-muted-foreground">
+              <a href="#" className="hover:text-foreground transition-colors">
+                隐私政策
+              </a>
+              <a href="#" className="hover:text-foreground transition-colors">
+                使用条款
+              </a>
+              <a href="#" className="hover:text-foreground transition-colors">
+                联系我们
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  )
+}
+[V0_FILE]jpg:file="public/apple-watch-hero-image-showing-multiple-watch-face.jpg" url="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/apple-watch-hero-image-showing-multiple-watch-face-essybndWm7VJZ2ETvqb2PkB5kYPjzo.jpg"
+[V0_FILE]jpg:file="public/apple-watch-health-monitoring-interface-showing-he.jpg" url="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/apple-watch-health-monitoring-interface-showing-he-4tACxiQ2rOgHVPF53dJazGe1Ww9TdB.jpg"
+[V0_FILE]jpg:file="public/apple-watch-with-sport-band-in-elegant-setting.jpg" url="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/apple-watch-with-sport-band-in-elegant-setting-7t0GhyQNP8oqioX14fMxF7iU8hS5nS.jpg"
+[V0_FILE]jpg:file="public/apple-watch-with-leather-band-in-professional-sett.jpg" url="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/apple-watch-with-leather-band-in-professional-sett-T3rWWQXwJp9l3cNU0L3fr6AWqLNQqF.jpg"
+[V0_FILE]jpg:file="public/apple-watch-with-metal-band-in-luxury-setting.jpg" url="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/apple-watch-with-metal-band-in-luxury-setting-2GCnrBsI3HCtLQ4IejKZ7hUGAlXPbl.jpg"
+[V0_FILE]json:file="package.json"
+{
+  "name": "my-v0-project",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.10.0",
+    "@radix-ui/react-accordion": "1.2.2",
+    "@radix-ui/react-alert-dialog": "1.1.4",
+    "@radix-ui/react-aspect-ratio": "1.1.1",
+    "@radix-ui/react-avatar": "1.1.2",
+    "@radix-ui/react-checkbox": "1.1.3",
+    "@radix-ui/react-collapsible": "1.1.2",
+    "@radix-ui/react-context-menu": "2.2.4",
+    "@radix-ui/react-dialog": "1.1.4",
+    "@radix-ui/react-dropdown-menu": "2.1.4",
+    "@radix-ui/react-hover-card": "1.1.4",
+    "@radix-ui/react-label": "2.1.1",
+    "@radix-ui/react-menubar": "1.1.4",
+    "@radix-ui/react-navigation-menu": "1.2.3",
+    "@radix-ui/react-popover": "1.1.4",
+    "@radix-ui/react-progress": "1.1.1",
+    "@radix-ui/react-radio-group": "1.2.2",
+    "@radix-ui/react-scroll-area": "1.2.2",
+    "@radix-ui/react-select": "2.1.4",
+    "@radix-ui/react-separator": "1.1.1",
+    "@radix-ui/react-slider": "1.2.2",
+    "@radix-ui/react-slot": "1.1.1",
+    "@radix-ui/react-switch": "1.1.2",
+    "@radix-ui/react-tabs": "1.1.2",
+    "@radix-ui/react-toast": "1.2.4",
+    "@radix-ui/react-toggle": "1.1.1",
+    "@radix-ui/react-toggle-group": "1.1.1",
+    "@radix-ui/react-tooltip": "1.1.6",
+    "@vercel/analytics": "1.3.1",
+    "autoprefixer": "^10.4.20",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cmdk": "1.0.4",
+    "date-fns": "4.1.0",
+    "embla-carousel-react": "8.5.1",
+    "geist": "^1.3.1",
+    "input-otp": "1.4.1",
+    "lucide-react": "^0.454.0",
+    "next": "14.2.25",
+    "next-themes": "^0.4.6",
+    "react": "^19",
+    "react-day-picker": "9.8.0",
+    "react-dom": "^19",
+    "react-hook-form": "^7.60.0",
+    "react-resizable-panels": "^2.1.7",
+    "recharts": "2.15.4",
+    "sonner": "^1.7.4",
+    "tailwind-merge": "^3.3.1",
+    "tailwindcss-animate": "^1.0.7",
+    "vaul": "^0.9.9",
+    "zod": "3.25.67"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.9",
+    "@types/node": "^22",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "postcss": "^8.5",
+    "tailwindcss": "^4.1.9",
+    "tw-animate-css": "1.3.3",
+    "typescript": "^5"
+  }
+}
